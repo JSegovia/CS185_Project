@@ -52,20 +52,7 @@
         </android.support.design.widget.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/etxt_nickname"
-                android:hint="User Nickname"
-                android:inputType="textVisiblePassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-
-        </android.support.design.widget.TextInputLayout>
 
 
         <android.support.v7.widget.AppCompatButton
@@ -84,7 +71,7 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/btn_open_channel_list"
+                android:id="@+id/btn_group_channel_list"
                 android:background="@null"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -92,14 +79,7 @@
                 android:text="Open Channels"
                 />
 
-            <Button
-                android:id="@+id/btn_group_channel_list"
-                android:background="@null"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Group Channels"
-                />
+
 
 
         </LinearLayout>
