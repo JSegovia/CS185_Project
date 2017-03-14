@@ -33,7 +33,7 @@ public class MainActivity extends FragmentActivity {
      * Please carefully read "Push notifications" section in SendBird Android documentation
      */
     //here
-    private static final String appId = "9DA1B1F4-0BE6-4DA8-82C5-2E81DAB56F23"; /* Sample SendBird Application */
+    private static final String appId = "51C862E6-86D3-4E6E-9858-6A9A40B1F43A";
 
     public static String sUserId;
     private String mNickname;
