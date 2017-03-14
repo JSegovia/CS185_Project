@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:text="SenderName"
                     android:textSize="13sp"
-                    android:textColor="#927ece"
+                    android:background="@color/sendbird_purple_color"
                     />
                 <TextView
                     android:id="@+id/txt_left"
@@ -112,7 +112,7 @@
                     android:layout_gravity="right"
                     android:gravity="right"
                     android:text="Unread"
-                    android:textColor="#ac90ff"
+                    android:background="@color/sendbird_purple_color"
                     android:textSize="10sp"
                     />
                 <TextView

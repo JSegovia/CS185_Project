@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId "com.sendbird.android.sample"
-        minSdkVersion 10
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode getVersionCode()
         versionName getVersionName()
