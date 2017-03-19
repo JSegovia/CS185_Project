@@ -86,6 +86,8 @@ public class MainActivity extends FragmentActivity {
                 Button btn = (Button) view;
                 if (btn.getText().equals("Connect")) {
                     connect();
+                    Intent intent = new Intent(MainActivity.this, SendBirdGroupChannelListActivity.class);
+                    startActivity(intent);
                 } else {
                     disconnect();
                 }
@@ -102,13 +104,13 @@ public class MainActivity extends FragmentActivity {
             }
         });*/
 
-        findViewById(R.id.btn_group_channel_list).setOnClickListener(new View.OnClickListener() {
+        /*findViewById(R.id.btn_group_channel_list).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SendBirdGroupChannelListActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
 
         TextView versionText = (TextView) findViewById(R.id.txt_sendbird_version);
         versionText.setText(String.format(getResources().getString(R.string.sendbird_version), SendBird.getSDKVersion()));

@@ -196,6 +196,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         private PreviousMessageListQuery mPrevMessageListQuery;
         private boolean mIsUploading;
 
+
         public SendBirdChatFragment() {
         }
 
@@ -615,6 +616,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         public void appendMessage(BaseMessage message) {
             mItemList.add(message);
         }
+
 
         @Override
         public int getItemViewType(int position) {
