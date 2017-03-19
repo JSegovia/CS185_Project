@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -128,6 +129,15 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                 } else {
                     mSettingsContainer.setVisibility(View.GONE);
                 }
+            }
+        });
+
+        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SendBirdGroupChannelListActivity.this, SendBirdUserListActivity.class);
+                mSendBirdGroupChannelListFragment.startActivityForResult(intent, SendBirdGroupChannelListFragment.REQUEST_INVITE_USERS);
+                mSettingsContainer.setVisibility(View.GONE);
             }
         });
 
@@ -354,6 +364,8 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
         }
 
     }
+
+
 
     public static class SendBirdGroupChannelAdapter extends BaseAdapter {
         private final Context mContext;
