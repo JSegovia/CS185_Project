@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -64,9 +65,20 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         overridePendingTransition(R.anim.sendbird_slide_in_from_bottom, R.anim.sendbird_slide_out_to_top);
         setContentView(R.layout.activity_sendbird_group_chat);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        final Intent i = getIntent();
+        final int postion = i.getIntExtra("position", 0);
+        i.putExtra("pos", postion);
         initFragment();
         initUIComponents();
+        Handler handler = new Handler();
+
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                setResult(Activity.RESULT_OK, i);
+                finish();
+            }
+        }, 10000);
+
     }
 
     @Override

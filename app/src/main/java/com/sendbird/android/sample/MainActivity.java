@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -86,6 +87,7 @@ public class MainActivity extends FragmentActivity {
                 Button btn = (Button) view;
                 if (btn.getText().equals("Connect")) {
                     connect();
+                    SystemClock.sleep(1000);
                     Intent intent = new Intent(MainActivity.this, SendBirdGroupChannelListActivity.class);
                     startActivity(intent);
                 } else {

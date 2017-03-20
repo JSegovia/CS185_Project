@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
 
     private View mTopBarContainer;
     private View mSettingsContainer;
+    static int pos = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,12 +180,15 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.sendbird_fragment_group_channel_list, container, false);
+
             initUIComponents(rootView);
             return rootView;
         }
 
         private void initUIComponents(View rootView) {
             mListView = (ListView) rootView.findViewById(R.id.list);
+            //dork
+
             mListView.setAdapter(mAdapter);
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -191,7 +196,8 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                     GroupChannel channel = mAdapter.getItem(position);
                     Intent intent = new Intent(getActivity(), SendBirdGroupChatActivity.class);
                     intent.putExtra("channel_url", channel.getUrl());
-                    startActivity(intent);
+                    intent.putExtra("position", position);
+                    startActivityForResult(intent, position);
                 }
             });
             mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -320,8 +326,26 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                     String[] userIds = data.getStringArrayExtra("user_ids");
                     create(userIds);
                 }
+                pos = data.getIntExtra("pos", -1);
+                SystemClock.sleep(5000);
+                if(pos >= 0){
+                    final GroupChannel channel = mAdapter.getItem(pos);
+                    channel.leave(new GroupChannel.GroupChannelLeaveHandler() {
+                        @Override
+                        public void onResult(SendBirdException e) {
+                            if (e != null) {
+                                Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            Toast.makeText(getActivity(), "Channel left.", Toast.LENGTH_SHORT).show();
+                            mAdapter.remove(pos);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });}
+                }
             }
-        }
+
 
         @Override
         public void onPause() {
