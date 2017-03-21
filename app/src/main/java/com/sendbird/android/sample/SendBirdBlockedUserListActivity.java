@@ -3,6 +3,7 @@ package com.sendbird.android.sample;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,14 +35,15 @@ public class SendBirdBlockedUserListActivity extends FragmentActivity {
     private SendBirdBlockedUserListFragment mSendBirdBlockedUserListFragment;
 
     private View mTopBarContainer;
-
+    static String user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.sendbird_slide_in_from_bottom, R.anim.sendbird_slide_out_to_top);
         setContentView(R.layout.activity_sendbird_blocked_user_list);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        Intent i = getIntent();
+        user = i.getStringExtra("user");
         initFragment();
         initUIComponents();
     }
@@ -132,7 +134,7 @@ public class SendBirdBlockedUserListActivity extends FragmentActivity {
         private void initUIComponents(View rootView) {
             mListView = (ListView)rootView.findViewById(R.id.list);
             mAdapter = new SendBirdUserAdapter(getActivity());
-
+            mAdapter.check();
             mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -204,6 +206,12 @@ public class SendBirdBlockedUserListActivity extends FragmentActivity {
                 mContext = context;
                 mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 mItemList = new ArrayList<>();
+            }
+
+            public void check(){
+                for(int i =0; i < mItemList.size(); i++)
+                    if(mItemList.get(i).getUserId().equals(user))
+                        mItemList.remove(i);
             }
 
             @Override

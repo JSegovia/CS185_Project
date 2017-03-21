@@ -47,6 +47,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
     private View mTopBarContainer;
     private View mSettingsContainer;
     static int pos = -1;
+    static String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
         overridePendingTransition(R.anim.sendbird_slide_in_from_bottom, R.anim.sendbird_slide_out_to_top);
         setContentView(R.layout.activity_sendbird_group_channel_list);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        username = getIntent().getStringExtra("user");
         initFragment();
         initUIComponents();
 
@@ -138,6 +139,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SendBirdGroupChannelListActivity.this, SendBirdUserListActivity.class);
+                intent.putExtra("user", username);
                 mSendBirdGroupChannelListFragment.startActivityForResult(intent, SendBirdGroupChannelListFragment.REQUEST_INVITE_USERS);
                 mSettingsContainer.setVisibility(View.GONE);
             }
@@ -194,7 +196,12 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     GroupChannel channel = mAdapter.getItem(position);
+                    BaseMessage message = channel.getLastMessage();
+
                     Intent intent = new Intent(getActivity(), SendBirdGroupChatActivity.class);
+                    if(channel.getUnreadMembers(message).contains(username)){
+                        intent.putExtra("delete", true);
+                    }
                     intent.putExtra("channel_url", channel.getUrl());
                     intent.putExtra("position", position);
                     startActivityForResult(intent, position);
@@ -344,6 +351,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                         }
                     });}
                 }
+
             }
 
 

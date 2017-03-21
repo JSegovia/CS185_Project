@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -71,14 +72,17 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         initFragment();
         initUIComponents();
         Handler handler = new Handler();
+        boolean d = i.getBooleanExtra("delete", false);
+       /* if(d) {
+            Log.d("DELETING", "DELETING");
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    setResult(Activity.RESULT_OK, i);
+                    finish();
+                }
+            }, 10000);
 
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                setResult(Activity.RESULT_OK, i);
-                finish();
-            }
-        }, 10000);
-
+     //   }*/
     }
 
     @Override
@@ -120,6 +124,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
     @Override
     public void finish() {
         super.finish();
+        setResult(Activity.RESULT_OK, getIntent());
         overridePendingTransition(R.anim.sendbird_slide_in_from_top, R.anim.sendbird_slide_out_to_bottom);
     }
 
@@ -155,6 +160,8 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         findViewById(R.id.btn_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                setResult(Activity.RESULT_OK, getIntent());
                 finish();
             }
         });

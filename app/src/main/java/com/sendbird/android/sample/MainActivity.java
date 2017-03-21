@@ -89,6 +89,7 @@ public class MainActivity extends FragmentActivity {
                     connect();
                     SystemClock.sleep(1000);
                     Intent intent = new Intent(MainActivity.this, SendBirdGroupChannelListActivity.class);
+                    intent.putExtra("user", mNickname);
                     startActivity(intent);
                 } else {
                     disconnect();
