@@ -153,21 +153,21 @@ public class MainActivity extends FragmentActivity {
                 ((Button) findViewById(R.id.btn_connect)).setText("Connect");
                 findViewById(R.id.btn_connect).setEnabled(true);
                // findViewById(R.id.btn_open_channel_list).setEnabled(false);
-                findViewById(R.id.btn_group_channel_list).setEnabled(false);
+                //findViewById(R.id.btn_group_channel_list).setEnabled(false);
                 break;
 
             case CONNECTING:
                 ((Button) findViewById(R.id.btn_connect)).setText("Connecting...");
                 findViewById(R.id.btn_connect).setEnabled(false);
                // findViewById(R.id.btn_open_channel_list).setEnabled(false);
-                findViewById(R.id.btn_group_channel_list).setEnabled(false);
+                //findViewById(R.id.btn_group_channel_list).setEnabled(false);
                 break;
 
             case CONNECTED:
                 ((Button) findViewById(R.id.btn_connect)).setText("Disconnect");
                 findViewById(R.id.btn_connect).setEnabled(true);
             //    findViewById(R.id.btn_open_channel_list).setEnabled(true);
-                findViewById(R.id.btn_group_channel_list).setEnabled(true);
+                //findViewById(R.id.btn_group_channel_list).setEnabled(true);
                 break;
         }
     }
@@ -190,7 +190,7 @@ public class MainActivity extends FragmentActivity {
                         if (e != null) {
                             Toast.makeText(MainActivity.this, "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             setState(State.DISCONNECTED);
-                            return;
+
                         }
 
                         SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
