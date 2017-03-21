@@ -1,5 +1,6 @@
 package com.sendbird.android.sample;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -7,11 +8,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -33,7 +36,17 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class SendBirdUserListActivity extends FragmentActivity {
-    private SendBirdUserListFragment mSendBirdUserListFragment;
+    public  SendBirdUserListFragment mSendBirdUserListFragment;
+
+     public static void done(HashSet<String> arr, Activity v) {
+         String[] userIds = arr.toArray(new String[0]);
+        if (userIds.length > 0) {
+            Intent data = new Intent();
+            data.putExtra("user_ids", userIds);
+            v.setResult(RESULT_OK, data);
+            v.finish();
+        }
+    }
 
     private View mTopBarContainer;
 
@@ -108,6 +121,10 @@ public class SendBirdUserListActivity extends FragmentActivity {
                 finish();
             }
         });
+        //((ListView)findViewById(R.id.list)).setOnItemClickListener(new View.On);
+
+
+
 
         findViewById(R.id.btn_ok).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,12 +135,17 @@ public class SendBirdUserListActivity extends FragmentActivity {
                     data.putExtra("user_ids", userIds);
                     setResult(RESULT_OK, data);
                     finish();
+
                 }
             }
         });
 
         resizeMenubar();
     }
+
+
+
+
 
     public static class SendBirdUserListFragment extends Fragment {
         private ListView mListView;
@@ -150,6 +172,7 @@ public class SendBirdUserListActivity extends FragmentActivity {
             mSelectedUserIds = new HashSet<>();
             mListView = (ListView) rootView.findViewById(R.id.list);
             mAdapter = new SendBirdUserAdapter(getActivity());
+
 
             mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
                 @Override
@@ -247,11 +270,17 @@ public class SendBirdUserListActivity extends FragmentActivity {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked) {
                             mSelectedUserIds.add(item.getUserId());
+
+                            SendBirdUserListActivity.done(mSelectedUserIds, getActivity());
+
+
+
                         } else {
                             mSelectedUserIds.remove(item.getUserId());
                         }
                         if (mSelectedUserIds.size() <= 0) {
                             ((Button) getActivity().findViewById(R.id.btn_ok)).setTextColor(Color.parseColor("#6f5ca7"));
+
                         } else {
                             ((Button) getActivity().findViewById(R.id.btn_ok)).setTextColor(Color.parseColor("#35f8ca"));
                         }

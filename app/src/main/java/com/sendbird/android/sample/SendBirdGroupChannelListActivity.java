@@ -344,11 +344,23 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
+
             if (resultCode == Activity.RESULT_OK) {
                 if (requestCode == REQUEST_INVITE_USERS) {
                     String[] userIds = data.getStringArrayExtra("user_ids");
                     create(userIds);
                 }
+               // Boolean n = data.getBooleanExtra("n",false);
+                /*if(n){
+                    SystemClock.sleep(500);
+                    mAdapter.notifyDataSetChanged();
+                    GroupChannel channel = mAdapter.getItem(mAdapter.getCount()-1);
+                    Intent intent = new Intent(getActivity(), SendBirdGroupChatActivity.class);
+                    intent.putExtra("channel_url", channel.getUrl());
+                    intent.putExtra("position", mAdapter.getCount()-1);
+                    startActivityForResult(intent, mAdapter.getCount()-1);
+                    return;
+                }*/
                 pos = data.getIntExtra("pos", -1);
                 boolean d = data.getBooleanExtra("delete", false);
                 SystemClock.sleep(500);
