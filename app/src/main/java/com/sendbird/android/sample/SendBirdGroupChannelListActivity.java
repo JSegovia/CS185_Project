@@ -301,7 +301,20 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
         }
 
         private void create(final String[] userIds) {
-            View view = getActivity().getLayoutInflater().inflate(R.layout.sendbird_view_group_create_channel, null);
+
+            GroupChannel.createChannelWithUserIds(Arrays.asList(userIds), true, userIds[0], null, null, new GroupChannel.GroupChannelCreateHandler() {
+                @Override
+                public void onResult(GroupChannel groupChannel, SendBirdException e) {
+                    if (e != null) {
+                        Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                   // mAdapter.replace(groupChannel);
+                }
+
+            });
+          /*  View view = getActivity().getLayoutInflater().inflate(R.layout.sendbird_view_group_create_channel, null);
             final EditText chName = (EditText) view.findViewById(R.id.etxt_chname);
             final CheckBox distinct = (CheckBox) view.findViewById(R.id.chk_distinct);
 
@@ -325,7 +338,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                             });
                         }
                     })
-                    .setNegativeButton("Cancel", null).create().show();
+                    .setNegativeButton("Cancel", null).create().show();*/
         }
 
         @Override
