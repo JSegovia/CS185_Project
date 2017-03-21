@@ -36,14 +36,14 @@ public class SendBirdUserListActivity extends FragmentActivity {
     private SendBirdUserListFragment mSendBirdUserListFragment;
 
     private View mTopBarContainer;
-
+    static  String user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.sendbird_slide_in_from_bottom, R.anim.sendbird_slide_out_to_top);
         setContentView(R.layout.activity_sendbird_user_list);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        user = getIntent().getStringExtra("user");
         initFragment();
         initUIComponents();
     }
@@ -150,7 +150,7 @@ public class SendBirdUserListActivity extends FragmentActivity {
             mSelectedUserIds = new HashSet<>();
             mListView = (ListView) rootView.findViewById(R.id.list);
             mAdapter = new SendBirdUserAdapter(getActivity());
-
+            mAdapter.check();
             mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -193,9 +193,21 @@ public class SendBirdUserListActivity extends FragmentActivity {
                 mItemList = new ArrayList<>();
             }
 
+            public void check(){
+                for(int i =0 ; i < mItemList.size(); i++)
+                    if(mItemList.get(i).getUserId() .equals(user))
+                        mItemList.remove(i);
+            }
+
             @Override
             public int getCount() {
                 return mItemList.size();
+            }
+
+            @Override
+            public  void notifyDataSetChanged(){
+                super.notifyDataSetChanged();
+                check();
             }
 
             @Override
