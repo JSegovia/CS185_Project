@@ -334,8 +334,9 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                     create(userIds);
                 }
                 pos = data.getIntExtra("pos", -1);
+                boolean d = data.getBooleanExtra("delete", false);
                 SystemClock.sleep(5000);
-                if(pos >= 0){
+                if(pos >= 0 && d){
                     final GroupChannel channel = mAdapter.getItem(pos);
                     channel.leave(new GroupChannel.GroupChannelLeaveHandler() {
                         @Override
@@ -346,7 +347,8 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                             }
 
                             Toast.makeText(getActivity(), "Channel left.", Toast.LENGTH_SHORT).show();
-                            mAdapter.remove(pos);
+                            if(mAdapter.getCount() > pos)
+                                 mAdapter.remove(pos);
                             mAdapter.notifyDataSetChanged();
                         }
                     });}
@@ -409,6 +411,16 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mItemList = new ArrayList<>();
         }
+
+        @Override
+        public void notifyDataSetChanged(){
+            for(int i =0; i < mItemList.size(); i++)
+                if(mItemList.get(i).getMembers().size() == 1)
+                    mItemList.remove(i);
+            super.notifyDataSetChanged();
+
+        }
+
 
         @Override
         public int getCount() {

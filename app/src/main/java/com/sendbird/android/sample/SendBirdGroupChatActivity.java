@@ -596,6 +596,8 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
             mGroupChannel = channel;
         }
 
+
+
         @Override
         public int getCount() {
             return mItemList.size() + (mGroupChannel.isTyping() ? 1 : 0);
