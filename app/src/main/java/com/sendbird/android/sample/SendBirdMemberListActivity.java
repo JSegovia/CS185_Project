@@ -201,8 +201,8 @@ public class SendBirdMemberListActivity extends FragmentActivity {
                     viewHolder.setView("img_thumbnail", convertView.findViewById(R.id.img_thumbnail));
                     viewHolder.setView("txt_name", convertView.findViewById(R.id.txt_name));
                     viewHolder.setView("txt_status", convertView.findViewById(R.id.txt_status));
-                    viewHolder.setView("chk_select", convertView.findViewById(R.id.chk_select));
-                    viewHolder.getView("chk_select", CheckBox.class).setVisibility(View.GONE);
+                   // viewHolder.setView("chk_select", convertView.findViewById(R.id.chk_select));
+                  //  viewHolder.getView("chk_select", CheckBox.class).setVisibility(View.GONE);
                     viewHolder.setView("txt_last_seen_at", convertView.findViewById(R.id.txt_last_seen_at));
                     viewHolder.getView("txt_last_seen_at", TextView.class).setVisibility(View.VISIBLE);
 

@@ -259,7 +259,7 @@ public class SendBirdUserListActivity extends FragmentActivity {
                 viewHolder = (ViewHolder) convertView.getTag();
                 Helper.displayUrlImage(viewHolder.getView("img_thumbnail", ImageView.class), item.getProfileUrl());
                 viewHolder.getView("txt_name", TextView.class).setText(item.getNickname());
-                viewHolder.getView("chk_select", CheckBox.class).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+               viewHolder.getView("chk_select", CheckBox.class).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked) {
