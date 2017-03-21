@@ -352,6 +352,8 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                             mAdapter.notifyDataSetChanged();
                         }
                     });}
+                SystemClock.sleep(500);
+                    mAdapter.notifyDataSetChanged();
                 }
 
             }
