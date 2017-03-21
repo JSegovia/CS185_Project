@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public class SendBirdUserListActivity extends FragmentActivity {
     private SendBirdUserListFragment mSendBirdUserListFragment;
-
+    private static String username;
     private View mTopBarContainer;
 
     @Override
@@ -43,7 +44,8 @@ public class SendBirdUserListActivity extends FragmentActivity {
         overridePendingTransition(R.anim.sendbird_slide_in_from_bottom, R.anim.sendbird_slide_out_to_top);
         setContentView(R.layout.activity_sendbird_user_list);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        Intent i = getIntent();
+        username = i.getStringExtra("user");
         initFragment();
         initUIComponents();
     }
@@ -150,7 +152,7 @@ public class SendBirdUserListActivity extends FragmentActivity {
             mSelectedUserIds = new HashSet<>();
             mListView = (ListView) rootView.findViewById(R.id.list);
             mAdapter = new SendBirdUserAdapter(getActivity());
-
+            mAdapter.check();
             mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -163,6 +165,7 @@ public class SendBirdUserListActivity extends FragmentActivity {
                     }
                 }
             });
+            mAdapter.check();
             mListView.setAdapter(mAdapter);
         }
 
@@ -193,6 +196,13 @@ public class SendBirdUserListActivity extends FragmentActivity {
                 mItemList = new ArrayList<>();
             }
 
+            public void check(){
+                Log.d("CHECK", Integer.toString(mItemList.size()));
+                for(int i =0; i < mItemList.size(); i++)
+                    if(mItemList.get(i).getUserId().equals(username))
+                        mItemList.remove(i);
+            }
+
             @Override
             public int getCount() {
                 return mItemList.size();
@@ -218,7 +228,14 @@ public class SendBirdUserListActivity extends FragmentActivity {
 
             public void addAll(Collection<User> users) {
                 mItemList.addAll(users);
+                check();
                 notifyDataSetChanged();
+            }
+
+            @Override
+            public void  notifyDataSetChanged(){
+                check();
+                super.notifyDataSetChanged();
             }
 
             @Override
