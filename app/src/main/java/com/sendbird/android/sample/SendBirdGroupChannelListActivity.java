@@ -335,7 +335,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
                 }
                 pos = data.getIntExtra("pos", -1);
                 boolean d = data.getBooleanExtra("delete", false);
-                SystemClock.sleep(5000);
+                SystemClock.sleep(500);
                 if(pos >= 0 && d){
                     final GroupChannel channel = mAdapter.getItem(pos);
                     channel.leave(new GroupChannel.GroupChannelLeaveHandler() {

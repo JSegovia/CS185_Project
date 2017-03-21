@@ -59,6 +59,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
     private View mTopBarContainer;
     private View mSettingsContainer;
     private String mChannelUrl;
+    private static SendBirdMessagingAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +161,9 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         findViewById(R.id.btn_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent i = getIntent();
+                if(mAdapter.shouldDelete())
+                  i.putExtra("delete", true);
                 setResult(Activity.RESULT_OK, getIntent());
                 finish();
             }
@@ -205,7 +208,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         private static final String identifier = "SendBirdGroupChat";
 
         private ListView mListView;
-        private SendBirdMessagingAdapter mAdapter;
+
         private EditText mEtxtMessage;
         private Button mBtnSend;
         private ImageButton mBtnUpload;
@@ -597,7 +600,22 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         }
 
 
+        public boolean shouldDelete(){
+            if(mItemList == null) {
+                Log.d("NULL", "NULL");
+                return true;
+            }
+            if(mItemList.size() == 0){
+                Log.d("SIZE", "SIZE");
+                return true;
+            }
 
+            if(mGroupChannel.getUnreadMembers(mGroupChannel.getLastMessage()).size() == 0) {
+                Log.d("ZERO", "ZERO");
+                return true;
+            }
+            return false;
+        }
         @Override
         public int getCount() {
             return mItemList.size() + (mGroupChannel.isTyping() ? 1 : 0);
