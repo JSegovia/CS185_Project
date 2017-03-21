@@ -48,6 +48,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
     private View mSettingsContainer;
     static int pos = -1;
     static String username;
+    private static SendBirdGroupChannelAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,8 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
         username = getIntent().getStringExtra("user");
         initFragment();
         initUIComponents();
-
+        if(mAdapter != null)
+            mAdapter.notifyDataSetChanged();
         Toast.makeText(this, "Long press the channel to hide or leave it.", Toast.LENGTH_LONG).show();
     }
 
@@ -173,7 +175,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
         private static final String identifier = "SendBirdGroupChannelList";
         private static final int REQUEST_INVITE_USERS = 100;
         private ListView mListView;
-        private SendBirdGroupChannelAdapter mAdapter;
+
         private GroupChannelListQuery mQuery;
 
         public SendBirdGroupChannelListFragment() {
@@ -184,6 +186,7 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
             View rootView = inflater.inflate(R.layout.sendbird_fragment_group_channel_list, container, false);
 
             initUIComponents(rootView);
+            mAdapter.notifyDataSetChanged();
             return rootView;
         }
 
