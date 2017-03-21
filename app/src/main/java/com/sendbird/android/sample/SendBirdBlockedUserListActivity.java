@@ -42,8 +42,7 @@ public class SendBirdBlockedUserListActivity extends FragmentActivity {
         overridePendingTransition(R.anim.sendbird_slide_in_from_bottom, R.anim.sendbird_slide_out_to_top);
         setContentView(R.layout.activity_sendbird_blocked_user_list);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        Intent i = getIntent();
-        user = i.getStringExtra("user");
+
         initFragment();
         initUIComponents();
     }
@@ -134,7 +133,7 @@ public class SendBirdBlockedUserListActivity extends FragmentActivity {
         private void initUIComponents(View rootView) {
             mListView = (ListView)rootView.findViewById(R.id.list);
             mAdapter = new SendBirdUserAdapter(getActivity());
-            mAdapter.check();
+
             mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -253,7 +252,7 @@ public class SendBirdBlockedUserListActivity extends FragmentActivity {
                     viewHolder.setView("root_view", convertView);
                     viewHolder.setView("img_thumbnail", convertView.findViewById(R.id.img_thumbnail));
                     viewHolder.setView("txt_name", convertView.findViewById(R.id.txt_name));
-                    viewHolder.setView("chk_select", convertView.findViewById(R.id.chk_select));
+                   // viewHolder.setView("chk_select", convertView.findViewById(R.id.chk_select));
                     viewHolder.setView("txt_status", convertView.findViewById(R.id.txt_status));
                     viewHolder.getView("chk_select", CheckBox.class).setVisibility(View.GONE);
 

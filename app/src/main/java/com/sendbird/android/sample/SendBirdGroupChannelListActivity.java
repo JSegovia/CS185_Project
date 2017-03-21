@@ -444,10 +444,11 @@ public class SendBirdGroupChannelListActivity extends FragmentActivity {
 
         @Override
         public void notifyDataSetChanged(){
+            super.notifyDataSetChanged();
             for(int i =0; i < mItemList.size(); i++)
                 if(mItemList.get(i).getMembers().size() == 1)
                     mItemList.remove(i);
-            super.notifyDataSetChanged();
+
 
         }
 
