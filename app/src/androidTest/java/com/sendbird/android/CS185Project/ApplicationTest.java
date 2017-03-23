@@ -1,4 +1,4 @@
-package com.sendbird.android.sample;
+package com.sendbird.android.CS185Project;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

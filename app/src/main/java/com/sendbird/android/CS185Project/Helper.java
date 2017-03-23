@@ -1,4 +1,4 @@
-package com.sendbird.android.sample;
+package com.sendbird.android.CS185Project;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

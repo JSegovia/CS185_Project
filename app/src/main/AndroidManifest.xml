@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sendbird.android.sample">
+    package="com.sendbird.android.CS185Project">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.sendbird.android.CS185Project.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
             <intent-filter>
@@ -22,52 +22,37 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SendBirdOpenChatActivity"
+            android:name="com.sendbird.android.CS185Project.UserListActivity"
             android:configChanges="orientation|screenSize"
             android:label="SendBird"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
         <activity
-            android:name=".SendBirdUserListActivity"
+            android:name="com.sendbird.android.CS185Project.MemberListActivity"
             android:configChanges="orientation|screenSize"
             android:label="SendBird"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
         <activity
-            android:name=".SendBirdBlockedUserListActivity"
+            android:name="com.sendbird.android.CS185Project.ParticipantListActivity"
             android:configChanges="orientation|screenSize"
             android:label="SendBird"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
         <activity
-            android:name=".SendBirdMemberListActivity"
+            android:name="com.sendbird.android.CS185Project.GroupChatActivity"
             android:configChanges="orientation|screenSize"
             android:label="SendBird"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
         <activity
-            android:name=".SendBirdParticipantListActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="SendBird"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
-        <activity
-            android:name=".SendBirdOpenChannelListActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="SendBird"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
-        <activity
-            android:name=".SendBirdGroupChatActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="SendBird"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
-        <activity
-            android:name=".SendBirdGroupChannelListActivity"
+            android:name="com.sendbird.android.CS185Project.GroupChannelListActivity"
             android:configChanges="orientation|screenSize"
             android:label="SendBird"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
 
-        <service android:name=".fcm.MyFirebaseMessagingService">
+        <service android:name="com.sendbird.android.CS185Project.fcm.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".fcm.MyFirebaseInstanceIDService">
+        <service android:name="com.sendbird.android.CS185Project.fcm.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>

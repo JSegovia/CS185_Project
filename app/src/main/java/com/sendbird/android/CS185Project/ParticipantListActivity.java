@@ -1,6 +1,8 @@
-package com.sendbird.android.sample;
+package com.sendbird.android.CS185Project;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,30 +11,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sendbird.android.GroupChannel;
+import com.sendbird.android.OpenChannel;
+import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
 import com.sendbird.android.User;
+import com.sendbird.android.UserListQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 
-public class SendBirdMemberListActivity extends FragmentActivity {
-    private SendBirdMemberListFragment mSendBirdMemberListFragment;
+public class ParticipantListActivity extends FragmentActivity {
+    private SendBirdParticipantListFragment mSendBirdParticipantListFragment;
+
     private View mTopBarContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.sendbird_slide_in_from_bottom, R.anim.sendbird_slide_out_to_top);
-        setContentView(R.layout.activity_sendbird_member_list);
+        setContentView(R.layout.activity_participant_list);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         initFragment();
@@ -67,7 +74,7 @@ public class SendBirdMemberListActivity extends FragmentActivity {
 
     private void resizeMenubar() {
         ViewGroup.LayoutParams lp = mTopBarContainer.getLayoutParams();
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             lp.height = (int) (28 * getResources().getDisplayMetrics().density);
         } else {
             lp.height = (int) (48 * getResources().getDisplayMetrics().density);
@@ -82,11 +89,11 @@ public class SendBirdMemberListActivity extends FragmentActivity {
     }
 
     private void initFragment() {
-        mSendBirdMemberListFragment = new SendBirdMemberListFragment();
-        mSendBirdMemberListFragment.setArguments(getIntent().getExtras());
+        mSendBirdParticipantListFragment = new SendBirdParticipantListFragment();
+        mSendBirdParticipantListFragment.setArguments(getIntent().getExtras());
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, mSendBirdMemberListFragment)
+                .replace(R.id.fragment_container, mSendBirdParticipantListFragment)
                 .commit();
     }
 
@@ -103,39 +110,39 @@ public class SendBirdMemberListActivity extends FragmentActivity {
         resizeMenubar();
     }
 
-    public static class SendBirdMemberListFragment extends Fragment {
+    public static class SendBirdParticipantListFragment extends Fragment {
         private ListView mListView;
+        private UserListQuery mUserListQuery;
         private SendBirdUserAdapter mAdapter;
         private String mChannelUrl;
 
-        public SendBirdMemberListFragment() {
-        }
+        public SendBirdParticipantListFragment() {}
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.sendbird_fragment_member_list, container, false);
-            mChannelUrl = getArguments().getString("channel_url");
-
+            View rootView = inflater.inflate(R.layout.fragment_participant_list, container, false);
             initUIComponents(rootView);
 
-            GroupChannel.getChannel(mChannelUrl, new GroupChannel.GroupChannelGetHandler() {
+            mChannelUrl = getArguments().getString("channel_url");
+
+            OpenChannel.getChannel(mChannelUrl, new OpenChannel.OpenChannelGetHandler() {
                 @Override
-                public void onResult(final GroupChannel groupChannel, SendBirdException e) {
-                    if (e != null) {
-                        Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                public void onResult(final OpenChannel openChannel, SendBirdException e) {
+                    if(e != null) {
+                      //  Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    groupChannel.refresh(new GroupChannel.GroupChannelRefreshHandler() {
+                    openChannel.refresh(new OpenChannel.OpenChannelRefreshHandler() {
                         @Override
                         public void onResult(SendBirdException e) {
                             if (e != null) {
-                                Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                               // Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            ((TextView) (getActivity().findViewById(R.id.txt_channel_name))).setText("Members (" + groupChannel.getMemberCount() + ")");
-                            mAdapter.addAll(groupChannel.getMembers());
-                            mAdapter.notifyDataSetChanged();
+                            ((TextView)getActivity().findViewById(R.id.txt_channel_name)).setText("Participants (" + openChannel.getParticipantCount() + ")");
+                            mUserListQuery = openChannel.createParticipantListQuery();
+                            loadMoreUsers();
                         }
                     });
                 }
@@ -145,9 +152,67 @@ public class SendBirdMemberListActivity extends FragmentActivity {
         }
 
         private void initUIComponents(View rootView) {
-            mListView = (ListView) rootView.findViewById(R.id.list);
+            mListView = (ListView)rootView.findViewById(R.id.list);
             mAdapter = new SendBirdUserAdapter(getActivity());
+
+            mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("User Block")
+                            .setMessage("Do you want to block the user?")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SendBird.blockUser(mAdapter.getItem(position), new SendBird.UserBlockHandler() {
+                                        @Override
+                                        public void onBlocked(User user, SendBirdException e) {
+                                            if (e != null) {
+                                              //  Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+
+                                       //     Toast.makeText(getActivity(), user.getNickname() + " is blocked.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .create().show();
+
+                    return true;
+                }
+            });
+            mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                }
+
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                    if (firstVisibleItem + visibleItemCount >= (int) (totalItemCount * 0.8f)) {
+                        loadMoreUsers();
+                    }
+                }
+            });
             mListView.setAdapter(mAdapter);
+        }
+
+        private void loadMoreUsers() {
+            if(mUserListQuery != null && mUserListQuery.hasNext() && !mUserListQuery.isLoading()) {
+                mUserListQuery.next(new UserListQuery.UserListQueryResultHandler() {
+                    @Override
+                    public void onResult(List<User> list, SendBirdException e) {
+                        if(e != null) {
+                           // Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        mAdapter.addAll(list);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
         }
 
         public class SendBirdUserAdapter extends BaseAdapter {
@@ -157,7 +222,7 @@ public class SendBirdMemberListActivity extends FragmentActivity {
 
             public SendBirdUserAdapter(Context context) {
                 mContext = context;
-                mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 mItemList = new ArrayList<>();
             }
 
@@ -193,7 +258,7 @@ public class SendBirdMemberListActivity extends FragmentActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
                 ViewHolder viewHolder;
 
-                if (convertView == null) {
+                if(convertView == null) {
                     viewHolder = new ViewHolder();
 
                     convertView = mInflater.inflate(R.layout.sendbird_view_user, parent, false);
@@ -202,9 +267,7 @@ public class SendBirdMemberListActivity extends FragmentActivity {
                     viewHolder.setView("txt_name", convertView.findViewById(R.id.txt_name));
                     viewHolder.setView("txt_status", convertView.findViewById(R.id.txt_status));
                    // viewHolder.setView("chk_select", convertView.findViewById(R.id.chk_select));
-                  //  viewHolder.getView("chk_select", CheckBox.class).setVisibility(View.GONE);
-                    viewHolder.setView("txt_last_seen_at", convertView.findViewById(R.id.txt_last_seen_at));
-                    viewHolder.getView("txt_last_seen_at", TextView.class).setVisibility(View.VISIBLE);
+                   // viewHolder.getView("chk_select", CheckBox.class).setVisibility(View.GONE);
 
                     convertView.setTag(viewHolder);
                 }
@@ -213,18 +276,7 @@ public class SendBirdMemberListActivity extends FragmentActivity {
                 viewHolder = (ViewHolder) convertView.getTag();
                 Helper.displayUrlImage(viewHolder.getView("img_thumbnail", ImageView.class), item.getProfileUrl());
                 viewHolder.getView("txt_name", TextView.class).setText(item.getNickname());
-
-                if (item.getConnectionStatus() == User.ConnectionStatus.ONLINE) {
-                    viewHolder.getView("txt_status", TextView.class).setText("Online");
-                    viewHolder.getView("txt_last_seen_at", TextView.class).setText("");
-                } else if (item.getConnectionStatus() == User.ConnectionStatus.OFFLINE && item.getLastSeenAt() != 0) {
-                    viewHolder.getView("txt_status", TextView.class).setText("Was Online At");
-                    viewHolder.getView("txt_last_seen_at", TextView.class).setText(Helper.getDisplayDateTime(mContext, item.getLastSeenAt()));
-                } else {
-                    viewHolder.getView("txt_status", TextView.class).setText("");
-                    viewHolder.getView("txt_last_seen_at", TextView.class).setText("");
-                }
-
+                viewHolder.getView("txt_status", TextView.class).setText(""); // Always online
                 return convertView;
             }
 

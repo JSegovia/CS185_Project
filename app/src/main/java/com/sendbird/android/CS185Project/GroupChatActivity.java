@@ -1,4 +1,4 @@
-package com.sendbird.android.sample;
+package com.sendbird.android.CS185Project;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,6 +11,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -53,27 +55,74 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
-public class SendBirdGroupChatActivity extends FragmentActivity {
+public class GroupChatActivity extends FragmentActivity {
     private SendBirdChatFragment mSendBirdMessagingFragment;
-
+    static String username;
     private View mTopBarContainer;
     private View mSettingsContainer;
-    private String mChannelUrl;
+
+    static ImageButton btn_close;
     private static SendBirdMessagingAdapter mAdapter;
+    private static ListView mListView;
+    private static FloatingActionButton myfab;
+    private static EditText mEtxtMessage;
+    private static Button mBtnSend;
+    private static ImageButton mBtnUpload;
+    private static ProgressBar mProgressBtnUpload;
+    private static String mChannelUrl;
+    private static GroupChannel mGroupChannel;
+    private static PreviousMessageListQuery mPrevMessageListQuery;
+    private static boolean mIsUploading;
+    private static boolean d;
+    //private static boolean should;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.sendbird_slide_in_from_bottom, R.anim.sendbird_slide_out_to_top);
-        setContentView(R.layout.activity_sendbird_group_chat);
+        setContentView(R.layout.activity_group_chat);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         final Intent i = getIntent();
         final int postion = i.getIntExtra("position", 0);
         i.putExtra("pos", postion);
         initFragment();
+
         initUIComponents();
+
+        findViewById(R.id.btn_close).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(GroupChatActivity.this)
+                        .setTitle("Delete Chat")
+                        .setMessage("Do you want to delete this chat?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Intent i = getIntent();
+                                if(mAdapter.shouldDelete())
+                                    i.putExtra("delete", true);
+                                setResult(Activity.RESULT_OK, getIntent());
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+            }
+        });
+       // SystemClock.sleep(1000);
+
         Handler handler = new Handler();
-        boolean d = i.getBooleanExtra("delete", false);
+        d = i.getBooleanExtra("delete", false);
+      //  should = i.getBooleanExtra("should", false);
+        username = i.getStringExtra("user");
        /* if(d) {
             Log.d("DELETING", "DELETING");
             handler.postDelayed(new Runnable() {
@@ -144,9 +193,9 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
             case Helper.MY_PERMISSION_REQUEST_STORAGE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED &&
                         grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission granted.", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(this, "Permission granted.", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, "Permission denied.", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(this, "Permission denied.", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -158,16 +207,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         mSettingsContainer = findViewById(R.id.settings_container);
         mSettingsContainer.setVisibility(View.GONE);
 
-        findViewById(R.id.btn_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = getIntent();
-                if(mAdapter.shouldDelete())
-                  i.putExtra("delete", true);
-                setResult(Activity.RESULT_OK, getIntent());
-                finish();
-            }
-        });
+
 
         findViewById(R.id.btn_settings).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +223,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         findViewById(R.id.btn_members).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SendBirdGroupChatActivity.this, SendBirdMemberListActivity.class);
+                Intent intent = new Intent(GroupChatActivity.this, MemberListActivity.class);
                 intent.putExtra("channel_url", mChannelUrl);
                 startActivity(intent);
                 mSettingsContainer.setVisibility(View.GONE);
@@ -193,13 +233,14 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         findViewById(R.id.btn_invite).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SendBirdGroupChatActivity.this, SendBirdUserListActivity.class);
+                Intent intent = new Intent(GroupChatActivity.this, UserListActivity.class);
                 mSendBirdMessagingFragment.startActivityForResult(intent, SendBirdChatFragment.REQUEST_INVITE_USERS);
                 mSettingsContainer.setVisibility(View.GONE);
             }
         });
 
         resizeMenubar();
+
     }
 
     public static class SendBirdChatFragment extends Fragment {
@@ -207,16 +248,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         private static final int REQUEST_INVITE_USERS = 200;
         private static final String identifier = "SendBirdGroupChat";
 
-        private ListView mListView;
 
-        private EditText mEtxtMessage;
-        private Button mBtnSend;
-        private ImageButton mBtnUpload;
-        private ProgressBar mProgressBtnUpload;
-        private String mChannelUrl;
-        private GroupChannel mGroupChannel;
-        private PreviousMessageListQuery mPrevMessageListQuery;
-        private boolean mIsUploading;
 
 
         public SendBirdChatFragment() {
@@ -224,13 +256,20 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.sendbird_fragment_group_chat, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_group_chat, container, false);
 
             mChannelUrl = getArguments().getString("channel_url");
 
             initUIComponents(rootView);
             initGroupChannel();
 
+            //SystemClock.sleep(5000);
+           /* if( mAdapter.shouldDelete()){
+                mBtnSend.setVisibility(View.INVISIBLE);
+                mBtnUpload.setVisibility(View.INVISIBLE);
+                mEtxtMessage.setVisibility(View.INVISIBLE);
+                mProgressBtnUpload.setVisibility(View.INVISIBLE);
+                myfab.setVisibility(View.VISIBLE);}*/
             return rootView;
         }
 
@@ -239,39 +278,72 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                 @Override
                 public void onResult(GroupChannel groupChannel, SendBirdException e) {
                     if (e != null) {
-                        Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     mGroupChannel = groupChannel;
                     mGroupChannel.markAsRead();
 
+
                     mAdapter = new SendBirdMessagingAdapter(getActivity(), mGroupChannel);
                     mListView.setAdapter(mAdapter);
-                    mAdapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged(getActivity());
 
                     updateGroupChannelTitle();
 
+
                     loadPrevMessages(true);
+                    SystemClock.sleep(1000);
+                    Log.d("DOMINICSIZE", Integer.toString(mAdapter.getCount()));
+                    if(mAdapter.getCount()!=0 && mAdapter.shouldDelete()){
+                        mBtnSend.setVisibility(View.INVISIBLE);
+                        mBtnUpload.setVisibility(View.INVISIBLE);
+                        mEtxtMessage.setVisibility(View.INVISIBLE);
+                        mProgressBtnUpload.setVisibility(View.INVISIBLE);
+                        myfab.setVisibility(View.VISIBLE);
+                        btn_close.setVisibility(View.INVISIBLE);
+                    }
+
                 }
             });
+
+
         }
 
         private void refreshGroupChannel() {
             if (mGroupChannel == null) return;
-
-            mGroupChannel.markAsRead();
             mGroupChannel.refresh(new GroupChannel.GroupChannelRefreshHandler() {
                 @Override
                 public void onResult(SendBirdException e) {
-                    mAdapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged(getActivity());
                     updateGroupChannelTitle();
                     loadPrevMessages(true);
                 }
             });
+            mGroupChannel.markAsRead();
+            SystemClock.sleep(1000);
+            if(mAdapter.getCount() != 0 && mAdapter.shouldDelete()){
+                mBtnSend.setVisibility(View.INVISIBLE);
+                mBtnUpload.setVisibility(View.INVISIBLE);
+                mEtxtMessage.setVisibility(View.INVISIBLE);
+                mProgressBtnUpload.setVisibility(View.INVISIBLE);
+                myfab.setVisibility(View.VISIBLE);
+                btn_close.setVisibility(View.INVISIBLE);
+            }
+
+
         }
 
         private void updateGroupChannelTitle() {
+            if(mGroupChannel.getMembers().size() == 1){
+                Intent i =  getActivity().getIntent();
+                i.putExtra("delete", true);
+                getActivity().setResult(Activity.RESULT_OK, i);
+                getActivity().finish();
+                return;
+            }
+
             ((TextView) getActivity().findViewById(R.id.txt_channel_name)).setText(Helper.getDisplayMemberNames(mGroupChannel.getMembers(), true));
         }
 
@@ -294,7 +366,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                             if (mAdapter != null) {
                                 mGroupChannel.markAsRead();
                                 mAdapter.appendMessage(baseMessage);
-                                mAdapter.notifyDataSetChanged();
+                                mAdapter.notifyDataSetChanged(getActivity());
                             }
                         }
                     }
@@ -302,14 +374,14 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                     @Override
                     public void onReadReceiptUpdated(GroupChannel groupChannel) {
                         if (groupChannel.getUrl().equals(mChannelUrl)) {
-                            mAdapter.notifyDataSetChanged();
+                            mAdapter.notifyDataSetChanged(getActivity());
                         }
                     }
 
                     @Override
                     public void onTypingStatusUpdated(GroupChannel groupChannel) {
                         if (groupChannel.getUrl().equals(mChannelUrl)) {
-                            mAdapter.notifyDataSetChanged();
+                            mAdapter.notifyDataSetChanged(getActivity());
                         }
                     }
 
@@ -342,17 +414,44 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         private void initUIComponents(View rootView) {
             mListView = (ListView) rootView.findViewById(R.id.list);
             turnOffListViewDecoration(mListView);
-
+            myfab = (FloatingActionButton) rootView.findViewById(R.id.fab);
             mBtnSend = (Button) rootView.findViewById(R.id.btn_send);
             mBtnUpload = (ImageButton) rootView.findViewById(R.id.btn_upload);
             mProgressBtnUpload = (ProgressBar) rootView.findViewById(R.id.progress_btn_upload);
             mEtxtMessage = (EditText) rootView.findViewById(R.id.etxt_message);
-
             mBtnSend.setEnabled(false);
             mBtnSend.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     send();
+                }
+            });
+            myfab.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Delete Chat")
+                            .setMessage("Do you want to delete this chat?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Intent i = getActivity().getIntent();
+                                    if(mAdapter.shouldDelete())
+                                        i.putExtra("delete", true);
+                                    getActivity().setResult(Activity.RESULT_OK, getActivity().getIntent());
+                                    getActivity().finish();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+
                 }
             });
 
@@ -365,11 +464,6 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_PICK_IMAGE);
-
-                        /**
-                         * Set this as false to maintain SendBird connection,
-                         * even when an external Activity is started.
-                         */
                         SendBird.setAutoBackgroundDetection(false);
                     }
                 }
@@ -431,6 +525,8 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                 public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 }
             });
+
+
         }
 
         private void loadPrevMessages(final boolean refresh) {
@@ -454,7 +550,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                 @Override
                 public void onResult(List<BaseMessage> list, SendBirdException e) {
                     if (e != null) {
-                        Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    //    Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -465,7 +561,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                     for (BaseMessage message : list) {
                         mAdapter.insertMessage(message);
                     }
-                    mAdapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged(getActivity());
                     mListView.setSelection(list.size());
                 }
             });
@@ -499,7 +595,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                 @Override
                 public void onResult(SendBirdException e) {
                     if (e != null) {
-                        Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
@@ -528,12 +624,12 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                 @Override
                 public void onSent(UserMessage userMessage, SendBirdException e) {
                     if (e != null) {
-                        Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     mAdapter.appendMessage(userMessage);
-                    mAdapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged(getActivity());
 
                     mEtxtMessage.setText("");
                 }
@@ -553,7 +649,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
             final int size = (Integer) info.get("size");
 
             if (path == null) {
-                Toast.makeText(getActivity(), "Uploading file must be located in local storage.", Toast.LENGTH_LONG).show();
+               // Toast.makeText(getActivity(), "Uploading file must be located in local storage.", Toast.LENGTH_LONG).show();
             } else {
                 showUploadProgress(true);
 
@@ -568,12 +664,12 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                     public void onSent(FileMessage fileMessage, SendBirdException e) {
                         showUploadProgress(false);
                         if (e != null) {
-                            Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(getActivity(), "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         mAdapter.appendMessage(fileMessage);
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.notifyDataSetChanged(getActivity());
                     }
                 });
             }
@@ -600,11 +696,27 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         }
 
 
+        public void notifyDataSetChanged(Activity v){
+            super.notifyDataSetChanged();
+            if(mGroupChannel.getMembers().size() == 1){
+                // Intent i = getIntent();
+                Intent i =  v.getIntent();
+                i.putExtra("delete", true);
+                v.setResult(Activity.RESULT_OK, i);
+                v.finish();
+            }
+        }
+
+
         public boolean shouldDelete(){
             if(mItemList == null) {
                 Log.d("NULL", "NULL");
                 return true;
             }
+
+            if(mGroupChannel.getUnreadMembers(mGroupChannel.getLastMessage()).contains(username))
+                return true;
+
             if(mItemList.size() == 0){
                 Log.d("SIZE", "SIZE");
                 return true;
@@ -618,7 +730,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
         }
         @Override
         public int getCount() {
-            return mItemList.size() + (mGroupChannel.isTyping() ? 1 : 0);
+            return mItemList.size();
         }
 
         @Override
@@ -699,7 +811,7 @@ public class SendBirdGroupChatActivity extends FragmentActivity {
                         ImageView iv;
                         View v;
 
-                        convertView = mInflater.inflate(R.layout.sendbird_view_group_user_message, parent, false);
+                        convertView = mInflater.inflate(R.layout.view_group_user_message, parent, false);
 
                         v = convertView.findViewById(R.id.left_container);
                         viewHolder.setView("left_container", v);

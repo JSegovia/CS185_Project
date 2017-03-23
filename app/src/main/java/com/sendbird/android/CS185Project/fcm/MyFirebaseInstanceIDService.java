@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.sendbird.android.sample.fcm;
+package com.sendbird.android.CS185Project.fcm;
 
 import android.util.Log;
 import android.widget.Toast;

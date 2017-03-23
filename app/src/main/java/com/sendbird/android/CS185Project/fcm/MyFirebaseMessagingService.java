@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.sendbird.android.sample.fcm;
+package com.sendbird.android.CS185Project.fcm;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,8 +27,8 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.sendbird.android.sample.MainActivity;
-import com.sendbird.android.sample.R;
+import com.sendbird.android.CS185Project.MainActivity;
+import com.sendbird.android.CS185Project.R;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
